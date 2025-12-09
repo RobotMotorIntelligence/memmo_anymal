@@ -358,13 +358,13 @@ Vector3 FootStepPlanner::compute_heuristic(const Eigen::VectorXd &bv, const Eige
 
   // Add feedback term
   if (feedback_term) {
-    footstep_tmp += k_feedback_ * bv.head<3>();
+    //footstep_tmp += k_feedback_ * bv.head<3>();
     footstep_tmp += -k_feedback_ * bvref.head<3>();
   }
 
   // Add centrifugal term
   Vector3 cross;
-  cross_tmp << bv(1) * bvref(5) - bv(2) * bvref(4), bv(2) * bvref(3) - bv(0) * bvref(5), 0.0;
+  cross_tmp << bvref(1) * bvref(5) - bvref(2) * bvref(4), bvref(2) * bvref(3) - bvref(0) * bvref(5), 0.0;
   footstep_tmp += 0.5 * std::sqrt(href_ / g_) * cross_tmp;
 
   // Limit deviation
