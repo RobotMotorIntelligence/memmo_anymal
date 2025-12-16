@@ -151,6 +151,4 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::trot(StdVec_Map_strin
   }
 
   return gait;
-
-  return gait;
 };
