@@ -99,6 +99,12 @@ def reduce_surfaces(surface_list, n_points=None):
 
     return out_surface_list
 
+def slope_quasi_static(surface):
+    n = surface.normal
+    z = np.array([0., 0., 1.])
+    plane_angle_cos = np.dot(n, z) / (np.linalg.norm(n) * np.linalg.norm(z))
+    theta = np.arccos(np.clip(plane_angle_cos, -1.0, 1.0))
+    return (np.degrees(theta)<30)
 
 def process_surfaces(surfacesIn,
                      polySize=10,
@@ -197,7 +203,7 @@ def process_surfaces(surfacesIn,
                 contours_intersect = [get_contour(vert_2D[:, 1:])]
 
         # No surface overllaping, keep initial surface.
-        if len(contours_intersect) == 0:
+        if len(contours_intersect) == 0 and slope_quasi_static(surfaces[id_]):
             new_surfaces.append(surfaces[id_].vertices_inner)
 
         # Surface overllaping, decompose the surface.
@@ -214,17 +220,17 @@ def process_surfaces(surfacesIn,
                     if method_type == DECOMPO_type.AREA or method_type == DECOMPO_type.AREA_CONVEX:
                         # Keep the surface if the area > min_area
                         # Or if the surface has not been decomposed
-                        if get_Polygon(get_contour(vt)).area > min_area:
+                        if get_Polygon(get_contour(vt)).area > min_area and slope_quasi_static(surfaces[id_]):
                             new_surfaces.append(projection_surface(vt, surfaces[id_].equation))
-                    else:
+                    elif slope_quasi_static(surfaces[id_]):
                         new_surfaces.append(projection_surface(vt, surfaces[id_].equation))
 
         # Remove the surface processed from the lists.
         surfaces.pop(id_)
 
     # Add last surface remaining
-    if len(new_surfaces) > 0:
-        new_surfaces.append(surfaces[0].get_vertices_inner())
+    # if len(new_surfaces) > 0:
+    new_surfaces.append(surfaces[0].get_vertices_inner())
     return new_surfaces
 
 
@@ -425,6 +431,28 @@ def order(points):
     output.pop(0)
     return [points[int(elt)].tolist() for elt in output]
 
+import visvalingamwyatt as vw
+def remove_duplicates(points, threshold=0.02):
 
-def remove_duplicates(points):
-    return np.unique(points, axis=0)
+    """ Decimate the number of point using visvalingamwyatt algorithm.
+    """
+    # points = [[point.x, point.y] for point in hole.points ]
+    simplifier = vw.Simplifier(points)
+    points_filtered = simplifier.simplify(threshold=threshold)
+    return np.array(points_filtered)
+
+# ~ def remove_duplicates(points, threshold=0.02):
+    # ~ filtered = []
+    # ~ points = np.asarray(points)
+
+    # ~ for p in points:
+        # ~ if len(filtered) == 0:
+            # ~ filtered.append(p)
+            # ~ continue
+
+        # ~ # distance to all previously kept points
+        # ~ d = np.linalg.norm(np.array(filtered) - p, axis=1)
+
+        # ~ if np.all(d > threshold):
+            # ~ filtered.append(p)
+    # ~ return np.array(filtered)
