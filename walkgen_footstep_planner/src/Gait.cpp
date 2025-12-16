@@ -1,10 +1,10 @@
 #include <Gait.hpp>
 
-QuadrupedalGaitGenerator::~QuadrupedalGaitGenerator(){};
+QuadrupedalGaitGenerator::~QuadrupedalGaitGenerator(){}
 
 QuadrupedalGaitGenerator::QuadrupedalGaitGenerator(double dt, int S, std::string lf, std::string lh, std::string rf,
-                                                   std::string rh)
-    : dt_(dt), S_(S), lf_(lf), lh_(lh), rf_(rf), rh_(rh) {
+                                                   std::string rh, std::string arm_name, const bool use_arm)
+    : dt_(dt), S_(S), lf_(lf), lh_(lh), rf_(rf), rh_(rh), arm_name(arm_name), use_arm(use_arm) {
   contactNames_.push_back(lf_);
   contactNames_.push_back(lh_);
   contactNames_.push_back(rf_);
@@ -69,6 +69,16 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::walk(StdVec_Map_strin
   gait->addSchedule(lf_, lf_schedule);
   gait->addSchedule(rh_, rh_schedule);
   gait->addSchedule(rf_, rf_schedule);
+  if(use_arm)
+  {
+      std::shared_ptr<FootTrajectoryWrapper> armTraj =
+      std::make_shared<FootTrajectoryWrapper>(dt_, N, 0, contacts[0][rf_], contacts[1][rf_]); // aligned on right foot      
+      std::vector<std::shared_ptr<ContactPhase>> arm_schedule = {
+      std::make_shared<ContactPhase>(0, ContactType::FULL),
+      std::make_shared<ContactPhase>(N, armTraj),
+      std::make_shared<ContactPhase>(0, ContactType::FULL)};           
+      gait->addSchedule(rf_, arm_schedule);      
+  }
 
   return gait;
 };
@@ -129,6 +139,18 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::trot(StdVec_Map_strin
   gait->addSchedule(rf_, rf_schedule);
   gait->addSchedule(lf_, lf_schedule);
   gait->addSchedule(rh_, rh_schedule);
+  if(use_arm)
+  {
+      std::shared_ptr<FootTrajectoryWrapper> armTraj =
+      std::make_shared<FootTrajectoryWrapper>(dt_, N, 0, contacts[0][rf_], contacts[1][rf_]); // aligned on right foot      
+      std::vector<std::shared_ptr<ContactPhase>> arm_schedule = {
+      std::make_shared<ContactPhase>(0, ContactType::FULL),
+      std::make_shared<ContactPhase>(N, armTraj),
+      std::make_shared<ContactPhase>(0, ContactType::FULL)};           
+      gait->addSchedule(rf_, arm_schedule);      
+  }
+
+  return gait;
 
   return gait;
 };

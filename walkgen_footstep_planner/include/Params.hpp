@@ -29,6 +29,7 @@ class Params {
 
   // Gait parameters
   std::string type;
+  std::string arm_name;
   double dt;
   int horizon;
   int nsteps;
@@ -39,6 +40,7 @@ class Params {
   int N_uss;
   int N_phase_return;
   bool reactive_planning; // Set to True to use low-pass filter on the base or False for rigid estimation.
+  bool use_arm; // If True, a reference trajectory for the robot gripper is generated
   std::vector<std::string> feet_names;
   std::vector<std::string> feet_names_sl1m;
   std::vector<std::vector<double>> shoulder_offsets;

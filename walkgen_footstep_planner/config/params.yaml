@@ -4,7 +4,8 @@ walkgen_params:
     # Use reactive planning (base filtered with a low-pass filter) by setting to True,
     # or use rigid planning (base estimator relies only on the commanded velocity) :
     reactive_planning: true
-
+    use_arm: true # if true contacts will be created for the arm
+    arm_name: "gripperMover"
   gait:
     type: "trot" # Only "walk" or "trot" working
     dt: 0.01

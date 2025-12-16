@@ -59,6 +59,8 @@ class FootStepPlannerParams:
         self.feet_names = ["FL_foot", "RL_foot", "FR_foot", "RR_foot"]  # b1 names
         self.feet_names_sl1m = ["FL_foot", "RL_foot", "FR_foot", "RR_foot"]  # b1 names
         self.shoulder_offsets = [[0.367, 0.2], [0.367, -0.2], [-0.367, 0.2], [-0.367, -0.2]]
+        self.arm_name = "gripperMover"
+        self.use_arm = False
         # self.feet_order = [0,1,2,3]  # [Left Front ; Left Hind ; Right Front ; Right Hind]
 
         # Bezier parameters
@@ -84,6 +86,8 @@ class FootStepPlannerParams:
         """
         config = yaml.load(open(filename, 'r'), Loader=yaml.FullLoader)
         self.N_phase_return = config["walkgen_params"]["params"]["N_phase_return"]
+        self.use_arm = config["walkgen_params"]["use_arm"]
+        self.arm_name = config["walkgen_params"]["params"]["arm_name"]
         self.typeGait = config["walkgen_params"]["gait"]["type"]
         self.dt = config["walkgen_params"]["gait"]["dt"]
         self.N_ds = config["walkgen_params"]["gait"][self.typeGait]["N_ds"]
@@ -93,9 +97,9 @@ class FootStepPlannerParams:
         self.horizon = config["walkgen_params"]["gait"]["horizon"]
         self.nsteps = config["walkgen_params"]["gait"]["nsteps"]
         self.stepHeight = config["walkgen_params"]["gait"]["stepHeight"]
-        feet_names = config["walkgen_params"]["gait"]["feet_names"]
-        feet_names_sl1m = config["walkgen_params"]["gait"]["feet_names_sl1m"]
-        shoulder_offsets = config["walkgen_params"]["gait"]["shoulder_offsets"]
+        self.feet_names = config["walkgen_params"]["gait"]["feet_names"]
+        self.feet_names_sl1m = config["walkgen_params"]["gait"]["feet_names_sl1m"]
+        self.shoulder_offsets = config["walkgen_params"]["gait"]["shoulder_offsets"]
         self.margin = config["walkgen_params"]["bezier"]["margin"]
         self.t_margin = config["walkgen_params"]["bezier"]["t_margin"]
         self.z_margin = config["walkgen_params"]["bezier"]["z_margin"]
