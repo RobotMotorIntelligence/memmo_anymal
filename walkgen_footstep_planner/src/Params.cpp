@@ -30,6 +30,8 @@ void Params::initialize_default() {
   shoulder_offsets.push_back({0.367, -0.2});
   shoulder_offsets.push_back({-0.367, 0.2});
   shoulder_offsets.push_back({-0.367, -0.2});
+  arm_name = "None";
+  use_arm = false;
 
   walk_N_ds = 90;
   walk_N_ss = 70;
@@ -76,6 +78,8 @@ Params::Params(const Params &other) {
   this->N_sample_ineq = other.N_sample_ineq;
   this->degree = other.degree;
   this->early_termination_ratio = other.early_termination_ratio;
+  this->arm_name = other.arm_name;
+  this->use_arm = other.use_arm;
 
   // Gait parametres for changing
   this->walk_N_ds = other.walk_N_ds;
@@ -100,6 +104,13 @@ void Params::parse_yaml_file(const std::string &filename) {
 
   assert_yaml_parsing(config["params"], filename, "reactive_planning");
   reactive_planning = config["params"]["reactive_planning"].as<bool>();
+  
+  assert_yaml_parsing(config["params"], filename, "use_arm");
+  use_arm = config["params"]["use_arm"].as<bool>();
+
+  
+  assert_yaml_parsing(config["params"], filename, "arm_name");
+  arm_name = config["params"]["arm_name"].as<std::string>();
 
   // assert_yaml_parsing(config, filename, "gait");
   assert_yaml_parsing(config["gait"], filename, "type");
