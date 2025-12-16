@@ -299,7 +299,7 @@ void exposeContactSchedule() {
   bp::register_ptr_to_python<std::shared_ptr<ContactSchedule>>();
   bp::class_<ContactSchedule, boost::noncopyable>(
       "ContactSchedule",
-      bp::init<double, int, int, std::vector<std::string>>(bp::args("dt", "T", "S_total", "contactNames"),
+      bp::init<double, int, int, std::vector<std::string>, bool, std::string>(bp::args("dt", "T", "S_total", "contactNames"),
                                                            "Constructor for a ContactSchedule object."))
       .def("addSchedule", &ContactSchedule::addSchedule)
       .def("updateSwitches", &ContactSchedule::updateSwitches)
