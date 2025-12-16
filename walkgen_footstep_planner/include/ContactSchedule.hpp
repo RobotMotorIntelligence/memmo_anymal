@@ -10,7 +10,7 @@
 
 class ContactSchedule {
  public:
-  ContactSchedule(double dt, int T, int S_total, std::vector<std::string> contactNames);
+  ContactSchedule(double dt, int T, int S_total, std::vector<std::string> contactNames, const bool use_arm, std::string arm_name);
   ContactSchedule(const ContactSchedule &other);
   void addSchedule(const std::string &name, const std::vector<std::shared_ptr<ContactPhase>> &schedule);
   void updateSwitches();
@@ -24,6 +24,6 @@ class ContactSchedule {
   std::vector<std::string> contactNames_;                           // contact names
   std::vector<std::vector<std::shared_ptr<ContactPhase>>> phases_;  // phases per each contact
   std::map<int, std::vector<int>> switches_;                        // map of time node to list of contacts
-};
+ };
 
 #endif  // CONTACTSCHEDULE_HPP

@@ -134,16 +134,16 @@ MatrixN FootStepPlanner::compute_footstep(std::vector<std::shared_ptr<ContactSch
                                           const VectorN &vq, const VectorN &bvref, const int timeline,
                                           const std::map<std::string, std::vector<Surface>> &selected_surfaces,
                                           const std::map<std::string, Surface> &previous_surfaces) {
-  if (q.size() != 19) {
-    throw std::runtime_error(
-        "Current state q should be an array of size 19 "
-        "[pos (x3), quaternion (x4), joint (x12)]");
-  }
-  if (vq.size() != 18) {
-    throw std::runtime_error(
-        "Current velocity vq should be an array of size "
-        "18 [lin vel (x3), ang vel (x3), joint vel(x12)]");
-  }
+  // if (q.size() != model_) {
+  //   throw std::runtime_error(
+  //       "Current state q should be an array of size 19 "
+  //       "[pos (x3), quaternion (x4), joint (x12)]");
+  // }
+  // if (vq.size() != 18) {
+  //   throw std::runtime_error(
+  //       "Current velocity vq should be an array of size "
+  //       "18 [lin vel (x3), ang vel (x3), joint vel(x12)]");
+  // }
   if (bvref.size() != 6) {
     throw std::runtime_error(
         "Reference velocity should be an array of size 6 "
@@ -199,7 +199,8 @@ MatrixN FootStepPlanner::update_position(std::vector<std::shared_ptr<ContactSche
   for (auto cs_iter = queue_cs.rbegin(); cs_iter != queue_cs.rend(); ++cs_iter) {
     auto &cs = **cs_iter;  // Reference to ContactSchedule
     if (cs_index <= horizon_ + 2) {
-      for (size_t c = 0; c < cs.contactNames_.size(); ++c) {
+      size_t exclude_arm = params_.use_arm ? 1 : 0;
+      for (size_t c = 0; c < cs.contactNames_.size()-exclude_arm; ++c) { // removing arm
         auto &name = cs.contactNames_[c];
         size_t j = find_stdVec(cs.contactNames_, name);  // Which foot in foot_timeline
         auto &phases = cs.phases_[c];
@@ -326,16 +327,16 @@ MatrixN FootStepPlanner::update_position(std::vector<std::shared_ptr<ContactSche
 }
 
 void FootStepPlanner::update_current_state(const Eigen::VectorXd &q, const Eigen::VectorXd &vq) {
-  if (q.size() != 19) {
-    throw std::runtime_error(
-        "Current state q should be an array of size 19 "
-        "[pos (x3), quaternion (x4), joint (x12)]");
-  }
-  if (vq.size() != 18) {
-    throw std::runtime_error(
-        "Current velocity vq should be an array of size "
-        "18 [lin vel (x3), ang vel (x3), joint vel(x12)]");
-  }
+  // if (q.size() != 19) {
+  //   throw std::runtime_error(
+  //       "Current state q should be an array of size 19 "
+  //       "[pos (x3), quaternion (x4), joint (x12)]");
+  // }
+  // if (vq.size() != 18) {
+  //   throw std::runtime_error(
+  //       "Current velocity vq should be an array of size "
+  //       "18 [lin vel (x3), ang vel (x3), joint vel(x12)]");
+  // }
   pinocchio::forwardKinematics(model_, data_, q, vq);
   size_t frame_id;
   for (size_t i = 0; i < contactNames_.size(); i++) {

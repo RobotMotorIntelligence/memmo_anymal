@@ -40,7 +40,7 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::walk(StdVec_Map_strin
   } else {
     N = N_0 + N_ds + 4 * N_ss - 2 * N_uss - N_uds;
   }
-  std::shared_ptr<ContactSchedule> gait = std::make_shared<ContactSchedule>(dt_, N, S_, contactNames_);
+  std::shared_ptr<ContactSchedule> gait = std::make_shared<ContactSchedule>(dt_, N, S_, contactNames_, use_arm, arm_name);
   std::shared_ptr<FootTrajectoryWrapper> lfSwingTraj =
       std::make_shared<FootTrajectoryWrapper>(dt_, N_ss, stepHeight, contacts[0][lf_], contacts[1][lf_]);
   std::shared_ptr<FootTrajectoryWrapper> lhSwingTraj =
@@ -72,12 +72,12 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::walk(StdVec_Map_strin
   if(use_arm)
   {
       std::shared_ptr<FootTrajectoryWrapper> armTraj =
-      std::make_shared<FootTrajectoryWrapper>(dt_, N, 0, contacts[0][rf_], contacts[1][rf_]); // aligned on right foot      
+      std::make_shared<FootTrajectoryWrapper>(dt_, N, 0, contacts[0][arm_name], contacts[1][arm_name]);  
       std::vector<std::shared_ptr<ContactPhase>> arm_schedule = {
       std::make_shared<ContactPhase>(0, ContactType::FULL),
       std::make_shared<ContactPhase>(N, armTraj),
-      std::make_shared<ContactPhase>(0, ContactType::FULL)};           
-      gait->addSchedule(rf_, arm_schedule);      
+      std::make_shared<ContactPhase>(0, ContactType::FULL)};  
+      gait->addSchedule(arm_name, arm_schedule);      
   }
 
   return gait;
@@ -112,7 +112,7 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::trot(StdVec_Map_strin
   } else {
     N = N_0 + 2 * N_ss - N_uss;
   }
-  std::shared_ptr<ContactSchedule> gait = std::make_shared<ContactSchedule>(dt_, N, S_, contactNames_);
+  std::shared_ptr<ContactSchedule> gait = std::make_shared<ContactSchedule>(dt_, N, S_, contactNames_, use_arm, arm_name);
   std::shared_ptr<FootTrajectoryWrapper> lfSwingTraj =
       std::make_shared<FootTrajectoryWrapper>(dt_, N_ss, stepHeight, contacts[0][lf_], contacts[1][lf_]);
   std::shared_ptr<FootTrajectoryWrapper> lhSwingTraj =
@@ -142,12 +142,12 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::trot(StdVec_Map_strin
   if(use_arm)
   {
       std::shared_ptr<FootTrajectoryWrapper> armTraj =
-      std::make_shared<FootTrajectoryWrapper>(dt_, N, 0, contacts[0][rf_], contacts[1][rf_]); // aligned on right foot      
+      std::make_shared<FootTrajectoryWrapper>(dt_, N, 0, contacts[0][arm_name], contacts[1][arm_name]);  
       std::vector<std::shared_ptr<ContactPhase>> arm_schedule = {
       std::make_shared<ContactPhase>(0, ContactType::FULL),
       std::make_shared<ContactPhase>(N, armTraj),
-      std::make_shared<ContactPhase>(0, ContactType::FULL)};           
-      gait->addSchedule(rf_, arm_schedule);      
+      std::make_shared<ContactPhase>(0, ContactType::FULL)};  
+      gait->addSchedule(arm_name, arm_schedule);      
   }
 
   return gait;
