@@ -19,7 +19,7 @@ class QuadrupedalGaitGenerator {
 
   // Constructor
   QuadrupedalGaitGenerator(double dt = 0.01, int S = 4, std::string lf = "LF_FOOT", std::string lh = "LH_FOOT",
-                           std::string rf = "RF_FOOT", std::string rh = "RH_FOOT");
+                           std::string rf = "RF_FOOT", std::string rh = "RH_FOOT", std::string arm_name = "gripperMover", const bool use_arm=false);
 
   std::shared_ptr<ContactSchedule> walk(StdVec_Map_string_SE3 contacts, int N_ds, int N_ss, int N_uds, int N_uss,
                                         double stepHeight, bool startPhase, bool endPhase);
@@ -33,6 +33,8 @@ class QuadrupedalGaitGenerator {
   std::string lh_;                         // Left hind name
   std::string rf_;                         // Right front name
   std::string rh_;                         // Right hind name
+  const std::string arm_name;             // name of the arm
+  const bool use_arm;                      // whether to plan the arm trajectory
   std::vector<std::string> contactNames_;  // Contact names list.
 
  private:

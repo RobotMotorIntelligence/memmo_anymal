@@ -59,12 +59,19 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
   cs1[lf] = data.oMf[model.getFrameId(lf)];
   cs1[rh] = data.oMf[model.getFrameId(rh)];
   cs1[rf] = data.oMf[model.getFrameId(rf)];
+  
+  if(params_.use_arm)
+  {          
+    cs0[params_.arm_name] = data.oMf[model.getFrameId(params_.arm_name)];
+    cs1[params_.arm_name] = data.oMf[model.getFrameId(params_.arm_name)];
+  }
 
-  QuadrupedalGaitGenerator gait_generator_ = QuadrupedalGaitGenerator(dt_, 4, lf, lh, rf, rh);
+  QuadrupedalGaitGenerator gait_generator_ = QuadrupedalGaitGenerator(dt_, 4, lf, lh, rf, rh, params_.arm_name, params_.use_arm);
   if (type_ == "trot") {
     initial_schedule_ = gait_generator_.trot({cs0, cs1}, 50, N_ss_, N_uss_, N_uds_, stepHeight_, true, false);
     default_schedule_ = gait_generator_.trot({cs0, cs1}, N_ds_, N_ss_, N_uss_, N_uds_, stepHeight_, false, false);
   } else if (type_ == "walk") {
+
     initial_schedule_ = gait_generator_.walk({cs0, cs1}, 100, N_ss_, N_uss_, N_uds_, stepHeight_, true, false);
     default_schedule_ = gait_generator_.walk({cs0, cs1}, N_ds_, N_ss_, N_uss_, N_uds_, stepHeight_, false, false);
   } else {
@@ -93,6 +100,7 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
   // Next MPC gait
   cmd_gait_ = 0;  // [0 --> Default, 1 --> Walk, 2 --> Trot]
   // Register the 2 type of shcedule
+
   trot_schedule_ = gait_generator_.trot({cs0, cs1}, params_.trot_N_ds, params_.trot_N_ss, params_.trot_N_uss,
                                         params_.trot_N_uds, stepHeight_, false, false);
   walk_schedule_ = gait_generator_.walk({cs0, cs1}, params_.walk_N_ds, params_.walk_N_ss, params_.walk_N_uss,
@@ -120,7 +128,6 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
   queue_cs_.push_back(initial_schedule_);
 
   // Add default CS depending on the horizon length.
-  std::cout << "gait manager horizon : " << horizon_ << std::endl;
   double T_global = initial_schedule_->T_;
   while (T_global < horizon_) {
     std::shared_ptr<ContactSchedule> schedule = std::make_shared<ContactSchedule>(*default_schedule_);

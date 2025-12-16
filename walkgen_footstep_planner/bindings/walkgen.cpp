@@ -216,6 +216,7 @@ void exposeParams() {
       "FootStepPlannerParams",
       bp::init<bp::optional<std::string>>(bp::args("filename"), "Constructor for parameter to laod the yaml."))
       .def_readwrite("typeGait", &Params::type, "Type of gait")
+      .def_readwrite("arm_name", &Params::arm_name, "name of the arm")
       .def_readwrite("dt", &Params::dt, "Time step duration")
       .def_readwrite("horizon", &Params::horizon, "Planning horizon (in steps)")
       .def_readwrite("nsteps", &Params::nsteps, "Number of steps to plan")
@@ -234,6 +235,8 @@ void exposeParams() {
       .def_readwrite("trot_N_uds", &Params::trot_N_uds, "Trotting Number of unloading double support phases")
       .def_readwrite("trot_N_uss", &Params::trot_N_uss, "Trotting Number of unloading single support phases")
 
+      .def_readwrite("use_arm", &Params::use_arm,
+                     "If True, a reference trajectory for the robot gripper is generated")
       .def_readwrite("reactive_planning", &Params::reactive_planning,
                      "Set to True to use low-pass filter on the base or False for rigid estimation.")
       .def_readwrite("N_phase_return", &Params::N_phase_return,
@@ -296,7 +299,7 @@ void exposeContactSchedule() {
   bp::register_ptr_to_python<std::shared_ptr<ContactSchedule>>();
   bp::class_<ContactSchedule, boost::noncopyable>(
       "ContactSchedule",
-      bp::init<double, int, int, std::vector<std::string>>(bp::args("dt", "T", "S_total", "contactNames"),
+      bp::init<double, int, int, std::vector<std::string>, bool, std::string>(bp::args("dt", "T", "S_total", "contactNames"),
                                                            "Constructor for a ContactSchedule object."))
       .def("addSchedule", &ContactSchedule::addSchedule)
       .def("updateSwitches", &ContactSchedule::updateSwitches)

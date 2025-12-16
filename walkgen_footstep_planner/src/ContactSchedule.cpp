@@ -1,16 +1,18 @@
 #include "ContactSchedule.hpp"
 #include <stdexcept>
 
-ContactSchedule::ContactSchedule(double dt, int T, int S_total, std::vector<std::string> contactNames)
+ContactSchedule::ContactSchedule(double dt, int T, int S_total, std::vector<std::string> contactNames, const bool use_arm, std::string arm_name)
     : dt_(dt),
       T_(T),
       S_total_(S_total),
       C_(0),
       contactNames_(std::move(contactNames)),
-      phases_(contactNames_.size()),
       switches_() {
+  if(use_arm)
+    contactNames_.push_back(arm_name);
   std::sort(contactNames_.begin(), contactNames_.end());
   C_ = int(contactNames_.size());
+  phases_.resize(C_);
 }
 
 ContactSchedule::ContactSchedule(const ContactSchedule &other)
