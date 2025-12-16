@@ -60,7 +60,7 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
   cs1[rh] = data.oMf[model.getFrameId(rh)];
   cs1[rf] = data.oMf[model.getFrameId(rf)];
 
-  QuadrupedalGaitGenerator gait_generator_ = QuadrupedalGaitGenerator(dt_, 4, lf, lh, rf, rh);
+  QuadrupedalGaitGenerator gait_generator_ = QuadrupedalGaitGenerator(dt_, 4, lf, lh, rf, rh, params_.arm_name, params_.use_arm);
   if (type_ == "trot") {
     initial_schedule_ = gait_generator_.trot({cs0, cs1}, 50, N_ss_, N_uss_, N_uds_, stepHeight_, true, false);
     default_schedule_ = gait_generator_.trot({cs0, cs1}, N_ds_, N_ss_, N_uss_, N_uds_, stepHeight_, false, false);

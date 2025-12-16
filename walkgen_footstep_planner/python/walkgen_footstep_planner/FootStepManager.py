@@ -138,12 +138,22 @@ class FootStepManager:
         """ Create a default contact schedule compatible with Caracal CS.
         contacts, N_ds, N_ss, N_uss=0, N_uds=0, stepHeight=0.15, startPhase=True, endPhase=True
         """
-        gait_generator = QuadrupedalGaitGenerator(dt=self._dt,
-                                                  S=4,
-                                                  lf=self._contactNames[0],
-                                                  lh=self._contactNames[1],
-                                                  rf=self._contactNames[2],
-                                                  rh=self._contactNames[3])
+        arm_name = None
+        gait_generator = None
+        if (self._params.use_arm):
+            gait_generator = QuadrupedalGaitGenerator(dt=self._dt,
+                                                      S=4,
+                                                      lf=self._contactNames[0],
+                                                      lh=self._contactNames[1],
+                                                      rf=self._contactNames[2],
+                                                      rh=self._contactNames[3], frame_names=[self._params.arm_name])
+        else:
+            gait_generator = QuadrupedalGaitGenerator(dt=self._dt,
+                                                      S=4,
+                                                      lf=self._contactNames[0],
+                                                      lh=self._contactNames[1],
+                                                      rf=self._contactNames[2],
+                                                      rh=self._contactNames[3])
         if self._typeGait == "trot":
             self._initial_cs = copy.deepcopy(
                 gait_generator.trot(contacts=[self._gait_manager.cs0, self._gait_manager.cs1],

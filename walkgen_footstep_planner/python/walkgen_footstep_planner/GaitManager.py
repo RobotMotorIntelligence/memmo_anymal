@@ -448,11 +448,14 @@ class QuadrupedalGaitGenerator:
     """ Create quadrupedal gait with polynomial swing foot trajectory.
     It uses a custom Trajectory object, independant from Caracal.
     """
-    def __init__(self, dt=1e-2, S=4, lf="LF_FOOT", lh="LH_FOOT", rf="RF_FOOT", rh="RH_FOOT"):
+    def __init__(self, dt=1e-2, S=4, lf="LF_FOOT", lh="LH_FOOT", rf="RF_FOOT", rh="RH_FOOT", arm_name=None):
         self._dt = dt
         self._S = S
         self._contactNames = [lf, lh, rf, rh]
-
+        self.use_arm = arm_name is not None
+        self.arm_name = arm_name
+    
+    
     def walk(self, contacts, N_ds, N_ss, N_uds=0, N_uss=0, stepHeight=0.15, startPhase=True, endPhase=True):
         N_0 = 0
         if startPhase:
@@ -485,7 +488,16 @@ class QuadrupedalGaitGenerator:
             ContactPhase(N_0 + N_ds + 3 * N_ss - 2 * N_uss - N_uds),
             ContactPhase(N_ss, trajectory=rfSwingTraj),
             ContactPhase(N - (N_0 + N_ds + 4 * N_ss - 2 * N_uss - N_uds))
-        ])
+        ])        
+        
+        if (self.use_arm):
+            armtraj = FootStepTrajectoryBezier(self._dt, N_ss, 0., contacts[0][rf], contacts[1][rf]) #TODO Z
+            gait.addSchedule(rf, [
+                ContactPhase(0, contactType=caracal.ContactType.FULL),
+                ContactPhase(N_ss, trajectory=armtraj),
+                ContactPhase(0, contactType=caracal.ContactType.FULL)
+            ])
+        
         return gait
 
     def trot(self, contacts, N_ds, N_ss, N_uss=0, N_uds=0, stepHeight=0.15, startPhase=True, endPhase=True):
@@ -521,6 +533,12 @@ class QuadrupedalGaitGenerator:
             ContactPhase(N - (N_0 + 2 * N_ss - N_uss))
         ])
 
+        if (self.use_arm):
+            armtraj = FootStepTrajectoryBezier(self._dt, N_ss, 0., contacts[0][rf], contacts[1][rf]) #TODO Z
+            gait.addSchedule(rf, [
+                ContactPhase(N_0 + N_ds + 3 * N_ss - 2 * N_uss - N_uds),
+                ContactPhase(N_ss, trajectory=rfSwingTraj),
+                ContactPhase(N - (N_0 + N_ds + 4 * N_ss - 2 * N_uss - N_uds))
         return gait
 
 
