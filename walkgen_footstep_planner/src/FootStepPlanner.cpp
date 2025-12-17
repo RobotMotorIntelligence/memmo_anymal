@@ -214,14 +214,14 @@ MatrixN FootStepPlanner::update_position(std::vector<std::shared_ptr<ContactSche
             // position
             if (active_phase->T_ + inactive_phase->T_ - timeline > 0) {  // case 1 and 2
               if (std::abs(bvref(5)) > 0.01) {
-                dt_i = static_cast<double>(cs_index + active_phase->T_ + inactive_phase->T_ - timeline) *
+                dt_i = static_cast<double>(cs_index + active_phase->T_ + inactive_phase->T_ ) *
                        cs.dt_;  // dt integration dt_i
                 dx = (bvref(0) * std::sin(bvref(5) * dt_i) + bvref(1) * (std::cos(bvref(5) * dt_i) - 1.0)) / bvref(5);
                 dy = (bvref(1) * std::sin(bvref(5) * dt_i) - bvref(0) * (std::cos(bvref(5) * dt_i) - 1.0)) / bvref(5);
                 dt_i = static_cast<double>(cs_index + active_phase->T_ + inactive_phase->T_) * cs.dt_;
                 Rz_tmp = pinocchio::rpy::rpyToMatrix(double(0.), double(0.), bvref(5) * dt_i);
               } else {
-                dt_i = static_cast<double>(cs_index + active_phase->T_ + inactive_phase->T_ - timeline) * cs.dt_;
+                dt_i = static_cast<double>(cs_index + active_phase->T_ + inactive_phase->T_ ) * cs.dt_;
                 dx = bvref(0) * dt_i;
                 dy = bvref(1) * dt_i;
                 Rz_tmp = Matrix3::Identity();
@@ -359,7 +359,7 @@ Vector3 FootStepPlanner::compute_heuristic(const Eigen::VectorXd &bv, const Eige
 
   // Add feedback term
   if (feedback_term) {
-    //footstep_tmp += k_feedback_ * bv.head<3>();
+    footstep_tmp += k_feedback_ * bv.head<3>();
     footstep_tmp += -k_feedback_ * bvref.head<3>();
   }
 
