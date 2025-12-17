@@ -74,6 +74,8 @@ class FootStepPlanner {
   std::vector<std::string> contactNames_;
   std::vector<std::string> contactNames_sl1m_;
   std::map<std::string, Vector3> offsets_feet_;
+  Vector3 current_gripper_position_;
+  Vector3 current_gripper_velocity_;
   MatrixN current_position_;
   Matrix34 current_velocities_;
   Matrix34 target_fsteps_;

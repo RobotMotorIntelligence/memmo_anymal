@@ -210,6 +210,17 @@ MatrixN FootStepPlanner::update_position(std::vector<std::shared_ptr<ContactSche
     auto &cs = **cs_iter;  // Reference to ContactSchedule
     if (cs_index <= horizon_ + 2) {
       size_t exclude_arm = params_.use_arm ? 1 : 0;
+      if (params_.use_arm)
+      {
+        auto &phases = cs.phases_[cs.contactNames_.size()-1];
+        auto &inactive_phase = phases[1];
+        auto &active_phase = phases[0];
+        std::string name = params_.arm_name;
+        dt_i = static_cast<double>(cs_index + active_phase->T_ + inactive_phase->T_ ) * cs.dt_;
+        Vector3 target = current_gripper_position_ + bvref.head<3>() * dt_i;
+        inactive_phase->trajectory_->update(current_gripper_position_,
+        current_gripper_velocity_,target,static_cast<double>(timeline - active_phase->T_*cs.dt_));
+      }
       for (size_t c = 0; c < cs.contactNames_.size()-exclude_arm; ++c) { // removing arm
         auto &name = cs.contactNames_[c];
         size_t j = find_stdVec(cs.contactNames_, name);  // Which foot in foot_timeline
@@ -355,6 +366,14 @@ void FootStepPlanner::update_current_state(const Eigen::VectorXd &q, const Eigen
     v_tmp = pinocchio::getFrameVelocity(model_, data_, frame_id);
     current_position_.col(static_cast<Eigen::Index>(i)) = oMf_tmp.translation();
     current_velocities_.col(static_cast<Eigen::Index>(i)) = v_tmp.linear();
+  }
+  if(params_.use_arm)
+  {
+    frame_id = model_.getFrameId(params_.arm_name);
+    oMf_tmp = pinocchio::updateFramePlacement(model_, data_, frame_id);
+    v_tmp = pinocchio::getFrameVelocity(model_, data_, frame_id);
+    current_gripper_position_ = oMf_tmp.translation();
+    current_gripper_velocity_ = v_tmp.linear();
   }
 }
 
