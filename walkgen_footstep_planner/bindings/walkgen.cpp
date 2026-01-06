@@ -237,6 +237,8 @@ void exposeParams() {
 
       .def_readwrite("use_arm", &Params::use_arm,
                      "If True, a reference trajectory for the robot gripper is generated")
+      .def_readwrite("raibert_root_frame", &Params::raibert_root_frame,
+                     "offset to apply_ for the raibert heuristic")
       .def_readwrite("reactive_planning", &Params::reactive_planning,
                      "Set to True to use low-pass filter on the base or False for rigid estimation.")
       .def_readwrite("N_phase_return", &Params::N_phase_return,

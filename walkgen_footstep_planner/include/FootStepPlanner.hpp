@@ -108,6 +108,8 @@ class FootStepPlanner {
   Vector3 footstep_tmp;  // heuristic function
   Vector3 cross_tmp;
   Vector6 q_filter_tmp;
+  VectorN q_offset;
+  pinocchio::SE3 offset_pose;
 
   Matrix3 Rz;
   Matrix3 Rxy;

@@ -6,6 +6,8 @@ walkgen_params:
     reactive_planning: true
     use_arm: true # if true contacts will be created for the arm
     arm_name: "gripperMover"
+    raibert_root_frame: "b1_z1_joint"
+    
   gait:
     type: "trot" # Only "walk" or "trot" working
     dt: 0.01

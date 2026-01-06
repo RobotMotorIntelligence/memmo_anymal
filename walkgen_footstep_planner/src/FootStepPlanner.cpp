@@ -152,11 +152,20 @@ MatrixN FootStepPlanner::compute_footstep(std::vector<std::shared_ptr<ContactSch
 
   // Update current feet position
   update_current_state(q, vq);
+  q_offset = q;
+  // qf_ is updated with respect to the offset frame for the raibert heuristic.
+  if (params_.use_arm) {
+    pinocchio::FrameIndex frame_id = model_.getFrameId(params_.raibert_root_frame);
+    offset_pose = pinocchio::updateFramePlacement(model_, data_, frame_id);
+    q_offset.head<3>() = offset_pose.translation();
+    Eigen::Quaterniond quat(offset_pose.rotation());
+    q_offset.tail<4>() << quat.x(), quat.y(), quat.z(), quat.w(); // ros convention...
+  }
 
   // Filter quantities
-  q_filter_tmp.head<3>() = q.head<3>();
+  q_filter_tmp.head<3>() = q_offset.head<3>();
   q_filter_tmp.tail<3>() =
-      pinocchio::rpy::matrixToRpy(pinocchio::SE3::Quaternion(q(6), q(3), q(4), q(5)).toRotationMatrix());
+      pinocchio::rpy::matrixToRpy(pinocchio::SE3::Quaternion(q_offset(6), q_offset(3), q_offset(4), q_offset(5)).toRotationMatrix());
 
   if (reactive_planning_){
     qf_ = filter_q.filter(q_filter_tmp);
@@ -170,6 +179,7 @@ MatrixN FootStepPlanner::compute_footstep(std::vector<std::shared_ptr<ContactSch
     qvf_(1) = bvref(1);
     qvf_(5) = bvref(5);
   }  
+
 
   return update_position(queue_cs, qf_, qvf_, bvref, timeline, selected_surfaces);
 }

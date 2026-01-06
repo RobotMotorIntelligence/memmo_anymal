@@ -4,6 +4,7 @@ using namespace yaml_check;
 
 void Params::initialize_default() {
   type = "trot";
+  raibert_root_frame ="";
   dt = 0.01;
   horizon = 125;
   nsteps = 1;
@@ -80,6 +81,7 @@ Params::Params(const Params &other) {
   this->early_termination_ratio = other.early_termination_ratio;
   this->arm_name = other.arm_name;
   this->use_arm = other.use_arm;
+  this->raibert_root_frame = other.raibert_root_frame;
 
   // Gait parametres for changing
   this->walk_N_ds = other.walk_N_ds;
@@ -107,6 +109,10 @@ void Params::parse_yaml_file(const std::string &filename) {
   
   assert_yaml_parsing(config["params"], filename, "use_arm");
   use_arm = config["params"]["use_arm"].as<bool>();
+  if (use_arm) {
+     assert_yaml_parsing(config["params"], filename, "raibert_root_frame"); 
+     raibert_root_frame = config["params"]["raibert_root_frame"].as<std::string>();
+    }
 
   
   assert_yaml_parsing(config["params"], filename, "arm_name");

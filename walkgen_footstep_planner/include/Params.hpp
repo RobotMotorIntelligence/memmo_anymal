@@ -30,6 +30,7 @@ class Params {
   // Gait parameters
   std::string type;
   std::string arm_name;
+  std::string raibert_root_frame;
   double dt;
   int horizon;
   int nsteps;
