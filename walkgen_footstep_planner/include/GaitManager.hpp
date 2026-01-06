@@ -64,6 +64,7 @@ class GaitManager {
   std::shared_ptr<ContactSchedule> default_schedule_;
   std::shared_ptr<ContactSchedule> walk_schedule_;
   std::shared_ptr<ContactSchedule> trot_schedule_;
+  std::shared_ptr<ContactSchedule> stand_schedule_;
 
   std::vector<std::string> contactNames_;       // Contact names list.
   std::vector<std::string> contactNames_sl1m_;  // Contact names list SL1M.
@@ -87,6 +88,7 @@ class GaitManager {
   int new_step_counter_;
   std::map<int, std::vector<int>> current_switches_;
   std::map<int, std::vector<int>> walk_switches_;
+  std::map<int, std::vector<int>> stand_switches_;
   std::map<int, std::vector<int>> trot_switches_;
   std::map<int, std::vector<int>> default_switches_;
   int NGAIT;

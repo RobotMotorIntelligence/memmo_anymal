@@ -42,6 +42,10 @@ void Params::initialize_default() {
   trot_N_ss = 30;
   trot_N_uds = 0;
   trot_N_uss = 0;
+  stand_N_ds = 100;
+  stand_N_ss = 0;
+  stand_N_uds = 0;
+  stand_N_uss =  0;
 }
 
 Params::~Params() {}
@@ -92,6 +96,10 @@ Params::Params(const Params &other) {
   this->trot_N_ss = other.trot_N_ss;
   this->trot_N_uds = other.trot_N_uds;
   this->trot_N_uss = other.trot_N_uss;
+  this->stand_N_ds = other.stand_N_ds;
+  this->stand_N_ss = other.stand_N_ss;
+  this->stand_N_uds = other.stand_N_uds;
+  this->stand_N_uss = other.stand_N_uss;
 }
 
 void Params::parse_yaml_file(const std::string &filename) {
@@ -172,6 +180,17 @@ void Params::parse_yaml_file(const std::string &filename) {
     N_ss = config["gait"]["walk"]["N_ss"].as<int>();
     N_uds = config["gait"]["walk"]["N_uds"].as<int>();
     N_uss = config["gait"]["walk"]["N_uss"].as<int>();
+  }  else if (type == "stand") {
+    // Check the yaml file
+    assert_yaml_parsing(config["gait"]["stand"], filename, "N_ds");
+    assert_yaml_parsing(config["gait"]["stand"], filename, "N_ss");
+    assert_yaml_parsing(config["gait"]["stand"], filename, "N_uds");
+    assert_yaml_parsing(config["gait"]["stand"], filename, "N_uss");
+
+    N_ds = config["gait"]["stand"]["N_ds"].as<int>();
+    N_ss = config["gait"]["stand"]["N_ss"].as<int>();
+    N_uds = config["gait"]["stand"]["N_uds"].as<int>();
+    N_uss = config["gait"]["stand"]["N_uss"].as<int>();
   }
 
   // Check the yaml file

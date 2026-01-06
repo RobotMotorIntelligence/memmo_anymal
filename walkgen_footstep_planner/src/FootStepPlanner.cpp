@@ -321,9 +321,9 @@ MatrixN FootStepPlanner::update_position(std::vector<std::shared_ptr<ContactSche
             }
           }
         } else {
-          throw std::runtime_error(
+          /*throw std::runtime_error(
               "Error in fstep planner. Only 3 phases per "
-              "ContactSchedule considered.");
+              "ContactSchedule considered.");*/
         }
       }
     } else {

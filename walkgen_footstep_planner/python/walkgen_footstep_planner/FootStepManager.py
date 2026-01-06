@@ -192,8 +192,28 @@ class FootStepManager:
                                     stepHeight=self._stepHeight,
                                     startPhase=False,
                                     endPhase=False))
-        self._initial_cs.updateSwitches()
-        self._default_cs.updateSwitches()
+        elif self._typeGait == "stand":
+            self._initial_cs = copy.deepcopy(
+                gait_generator.stand(contacts=[self._gait_manager.cs0, self._gait_manager.cs1],
+                                    N_ds=100,
+                                    N_ss=self._N_ss,
+                                    N_uss=self._N_uss,
+                                    N_uds=self._N_uds,
+                                    stepHeight=self._stepHeight,
+                                    startPhase=True,
+                                    endPhase=False))
+            self._default_cs = copy.deepcopy(
+                gait_generator.stand(contacts=[self._gait_manager.cs0, self._gait_manager.cs1],
+                                    N_ds=self._N_ds,
+                                    N_ss=self._N_ss,
+                                    N_uss=self._N_uss,
+                                    N_uds=self._N_uds,
+                                    stepHeight=self._stepHeight,
+                                    startPhase=False,
+                                    endPhase=False))
+        if (self._typeGait != "stand"):
+            self._initial_cs.updateSwitches()
+            self._default_cs.updateSwitches()
 
         # Register walking gait schedule
         self._walk_cs = copy.deepcopy(
@@ -208,6 +228,16 @@ class FootStepManager:
         # Register trotting gait schedule
         self._trot_cs = copy.deepcopy(
             gait_generator.trot(contacts=[self._gait_manager.cs0, self._gait_manager.cs1],
+                                N_ds=self._params.trot_N_ds,
+                                N_ss=self._params.trot_N_ss,
+                                N_uss=self._params.trot_N_uss,
+                                N_uds=self._params.trot_N_uds,
+                                stepHeight=self._stepHeight,
+                                startPhase=False,
+                                endPhase=False))
+        # Register trotting gait schedule
+        self._stand_cs = copy.deepcopy(
+            gait_generator.stand(contacts=[self._gait_manager.cs0, self._gait_manager.cs1],
                                 N_ds=self._params.trot_N_ds,
                                 N_ss=self._params.trot_N_ss,
                                 N_uss=self._params.trot_N_uss,

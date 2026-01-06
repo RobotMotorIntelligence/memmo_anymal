@@ -68,6 +68,11 @@ class Params {
   int trot_N_ss;
   int trot_N_uds;
   int trot_N_uss;
+  // Stand parameters
+  int stand_N_ds;
+  int stand_N_ss;
+  int stand_N_uds;
+  int stand_N_uss; 
 };
 
 // From

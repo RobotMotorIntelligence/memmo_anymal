@@ -27,6 +27,9 @@ class QuadrupedalGaitGenerator {
   std::shared_ptr<ContactSchedule> trot(StdVec_Map_string_SE3 contacts, int N_ds, int N_ss, int N_uds, int N_uss,
                                         double stepHeight, bool startPhase, bool endPhase);
 
+  std::shared_ptr<ContactSchedule> stand(StdVec_Map_string_SE3 contacts, int N_ds, int N_ss, int N_uds, int N_uss,
+                                        double stepHeight, bool startPhase, bool endPhase);
+
   double dt_;                              // Node dt.
   int S_;                                  // Number of contacts
   std::string lf_;                         // Left front name

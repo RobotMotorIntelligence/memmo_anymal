@@ -164,6 +164,9 @@ void exposeQuadrupedalGait() {
       .def("trot", &QuadrupedalGaitGenerator::trot,
            (bp::arg("contacts"), bp::arg("N_ds"), bp::arg("N_ss"), bp::arg("N_uds") = 0, bp::arg("N_uss") = 0,
             bp::arg("stepHeight") = 0.15, bp::arg("startPhase") = true, bp::arg("endPhase") = true))
+      .def("stand", &QuadrupedalGaitGenerator::stand,
+           (bp::arg("contacts"), bp::arg("N_ds"), bp::arg("N_ss"), bp::arg("N_uds") = 0, bp::arg("N_uss") = 0,
+            bp::arg("stepHeight") = 0., bp::arg("startPhase") = true, bp::arg("endPhase") = true))
       .def_readwrite("dt", &QuadrupedalGaitGenerator::dt_, "Time step duration")
       .def_readwrite("S", &QuadrupedalGaitGenerator::S_, "Number of contact")
       .def_readwrite("lf", &QuadrupedalGaitGenerator::lf_, "Left front leg")
@@ -234,6 +237,10 @@ void exposeParams() {
       .def_readwrite("trot_N_ss", &Params::trot_N_ss, "Trotting Number of single support phases")
       .def_readwrite("trot_N_uds", &Params::trot_N_uds, "Trotting Number of unloading double support phases")
       .def_readwrite("trot_N_uss", &Params::trot_N_uss, "Trotting Number of unloading single support phases")
+      .def_readwrite("stand_N_ds", &Params::stand_N_ds, "Trotting Number of double support phases")
+      .def_readwrite("stand_N_ss", &Params::stand_N_ss, "Trotting Number of single support phases")
+      .def_readwrite("stand_N_uds", &Params::stand_N_uds, "Standing Number of unloading double support phases")
+      .def_readwrite("stand_N_uss", &Params::stand_N_uss, "Standing Number of unloading single support phases")
 
       .def_readwrite("use_arm", &Params::use_arm,
                      "If True, a reference trajectory for the robot gripper is generated")

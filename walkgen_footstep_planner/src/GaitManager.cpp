@@ -74,8 +74,11 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
 
     initial_schedule_ = gait_generator_.walk({cs0, cs1}, 100, N_ss_, N_uss_, N_uds_, stepHeight_, true, false);
     default_schedule_ = gait_generator_.walk({cs0, cs1}, N_ds_, N_ss_, N_uss_, N_uds_, stepHeight_, false, false);
-  } else {
-    throw std::invalid_argument("Unknown gait type in the config file. Try Trot or Walk.");
+  } else if (type_ == "stand") {
+    initial_schedule_ = gait_generator_.stand({cs0, cs1}, 100, N_ss_, N_uss_, N_uds_, stepHeight_, true, false);
+    default_schedule_ = gait_generator_.stand({cs0, cs1}, N_ds_, N_ss_, N_uss_, N_uds_, stepHeight_, false, false);
+  }  else {
+    throw std::invalid_argument("Unknown gait type in the config file. Try trot, walk or stand.");
   }
 
   if (params_.horizon == 0) {
@@ -84,7 +87,6 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
   } else {
     horizon_ = params_.horizon;
   }
-
   timeline_ = 0;  // Current timeline
   new_step_ = false;
   is_first_gait_ = true;
@@ -105,6 +107,8 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
                                         params_.trot_N_uds, stepHeight_, false, false);
   walk_schedule_ = gait_generator_.walk({cs0, cs1}, params_.walk_N_ds, params_.walk_N_ss, params_.walk_N_uss,
                                         params_.walk_N_uds, stepHeight_, false, false);
+  stand_schedule_ = gait_generator_.stand({cs0, cs1}, params_.stand_N_ds, params_.stand_N_ss, params_.stand_N_uss,
+                                        params_.stand_N_uds, stepHeight_, false, false);
   // Initialize trot schedule
   trot_schedule_->updateSwitches();
   std::vector<std::shared_ptr<ContactSchedule>> queue_tmp;
@@ -117,6 +121,12 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
   queue_tmp.push_back(walk_schedule_);
   walk_switches_.clear();
   update_switches(queue_tmp, walk_switches_, 0, false);
+  // Initialize stand schedule
+  //stand_schedule_->updateSwitches();
+  queue_tmp.clear();
+  queue_tmp.push_back(stand_schedule_);
+  stand_switches_.clear();
+  ///update_switches(queue_tmp, stand_switches_, 0, false);
   // Initialize default schedule
   queue_tmp.clear();
   queue_tmp.push_back(default_schedule_);
@@ -124,7 +134,8 @@ void GaitManager::initialize(const pinocchio::Model &model, const VectorN &q) {
   update_switches(queue_tmp, default_switches_, 0, false);
 
   // Add initial CS (with longer stand phase to warm-up the MPC)
-  initial_schedule_->updateSwitches();
+  if (type_ != "stand")
+    initial_schedule_->updateSwitches();
   queue_cs_.push_back(initial_schedule_);
 
   // Add default CS depending on the horizon length.
@@ -173,6 +184,7 @@ bool GaitManager::update() {
       // code
       // TODO : Create a list
       std::shared_ptr<ContactSchedule> gait = get_next_cs();
+      if (type_ != "stand")
       gait->updateSwitches();
       queue_cs_.insert(queue_cs_.begin(), gait);
       // Queue of contact modified, --> update switches
@@ -228,6 +240,8 @@ std::shared_ptr<ContactSchedule> GaitManager::get_next_cs() {
     return std::make_shared<ContactSchedule>(*(walk_schedule_));
   } else if (cmd_gait_ == 2) {
     return std::make_shared<ContactSchedule>(*(trot_schedule_));
+  } else if (cmd_gait_ == 3) {
+    return std::make_shared<ContactSchedule>(*(stand_schedule_));
   } else {
     return std::make_shared<ContactSchedule>(*(default_schedule_));
   }
@@ -237,6 +251,8 @@ std::map<int, std::vector<int>> GaitManager::get_next_switch() {
     return walk_switches_;
   } else if (cmd_gait_ == 2) {
     return trot_switches_;
+  } else if (cmd_gait_ == 3) {
+    return stand_switches_;
   } else {
     return default_switches_;
   }
@@ -267,6 +283,8 @@ std::vector<int> GaitManager::evaluate_config(const ContactSchedule &schedule, i
 void GaitManager::update_switches(const std::vector<std::shared_ptr<ContactSchedule>> cs_queue,
                                   std::map<int, std::vector<int>> &switches, const int timeline_in, bool use_next_cs) {
   // int index_cs = 0;
+  if (type_ == "stand"){
+    return;}
   int T_total = 0;
   for (auto itr = cs_queue.rbegin(); itr != cs_queue.rend(); ++itr) {
     const ContactSchedule &cs = **itr;

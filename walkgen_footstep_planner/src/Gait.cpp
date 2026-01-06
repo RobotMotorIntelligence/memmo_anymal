@@ -152,3 +152,46 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::trot(StdVec_Map_strin
 
   return gait;
 };
+
+
+  std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::stand(StdVec_Map_string_SE3 contacts, int N_ds, int N_ss, int N_uds, int N_uss,
+                                        double stepHeight=0., bool startPhase=true, bool endPhase=true)
+  {
+
+    try {
+      // Check if contact[0][lf_] and contact[1][lf_] ..etc does exits.
+      for (size_t i = 0; i < 2; i++) {
+        for (const auto &name : contactNames_) {
+          contacts[i].at(name);
+        }
+      }
+    } catch (std::out_of_range &e) {
+      throw std::runtime_error(
+          "Key names in the contact dictionary are not consistent with the ones "
+          "defined in initial constructor.");
+    }
+    int N = N_ds;
+
+    std::shared_ptr<ContactSchedule> gait = std::make_shared<ContactSchedule>(dt_, N, S_, contactNames_, use_arm, arm_name);
+    std::vector<std::shared_ptr<ContactPhase>> lh_schedule = {std::make_shared<ContactPhase>(N_ds)};
+    std::vector<std::shared_ptr<ContactPhase>> rf_schedule = {std::make_shared<ContactPhase>(N_ds)};
+    std::vector<std::shared_ptr<ContactPhase>> lf_schedule = {std::make_shared<ContactPhase>(N_ds)};
+    std::vector<std::shared_ptr<ContactPhase>> rh_schedule = {std::make_shared<ContactPhase>(N_ds)};
+
+    gait->addSchedule(lh_, lh_schedule);
+    gait->addSchedule(rf_, rf_schedule);
+    gait->addSchedule(lf_, lf_schedule);
+    gait->addSchedule(rh_, rh_schedule);
+
+    if(use_arm)
+    {
+        std::shared_ptr<FootTrajectoryWrapper> armTraj =
+        std::make_shared<FootTrajectoryWrapper>(dt_, N, 0, contacts[0][arm_name], contacts[1][arm_name]);  
+        std::vector<std::shared_ptr<ContactPhase>> arm_schedule = {
+        std::make_shared<ContactPhase>(0, ContactType::FULL),
+        std::make_shared<ContactPhase>(N, armTraj),
+        std::make_shared<ContactPhase>(0, ContactType::FULL)};  
+        gait->addSchedule(arm_name, arm_schedule);      
+    }
+  return gait;
+  }
