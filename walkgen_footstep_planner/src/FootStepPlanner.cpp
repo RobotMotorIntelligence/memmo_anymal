@@ -213,13 +213,13 @@ MatrixN FootStepPlanner::update_position(std::vector<std::shared_ptr<ContactSche
       if (params_.use_arm)
       {
         auto &phases = cs.phases_[cs.contactNames_.size()-1];
-        auto &inactive_phase = phases[1];
-        auto &active_phase = phases[0];
+        auto &inactive_phase = phases[0];
+        auto &active_phase = phases[1];
         std::string name = params_.arm_name;
         dt_i = static_cast<double>(cs_index + active_phase->T_ + inactive_phase->T_ ) * cs.dt_;
         Vector3 target = current_gripper_position_ + bvref.head<3>() * dt_i;
-        inactive_phase->trajectory_->update(current_gripper_position_,
-        current_gripper_velocity_,target,static_cast<double>(timeline - active_phase->T_*cs.dt_));
+        active_phase->trajectory_->update(current_gripper_position_,
+        current_gripper_velocity_,target,static_cast<double>((timeline - cs_index)  *cs.dt_));
       }
       for (size_t c = 0; c < cs.contactNames_.size()-exclude_arm; ++c) { // removing arm
         auto &name = cs.contactNames_[c];
