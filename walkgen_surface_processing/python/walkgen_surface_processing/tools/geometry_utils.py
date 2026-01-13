@@ -62,6 +62,65 @@ def convert_from_marker_array(marker_array, offset=0.0):
     return surface_list
 
 
+def triangle_area_2d(a, b, c):
+    """Area of a triangle in XY plane"""
+    return abs((b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0])) / 2
+
+def max_area_k_gon_2d(points, k):
+    """Returns the indices of the points forming the maximal-area k-gon on the convex hull.
+    from https://math.stackexchange.com/questions/1953393/finding-maximum-area-k-gon-given-a-set-of-points """
+    points = np.array(points)[:, :2]  # Working in XY - quasi flat assumption allows to ignore slope
+    hull = ConvexHull(points)
+    hull_points = points[hull.vertices]
+    hull_indices = hull.vertices
+    L = len(hull_points)
+
+    if k >= L:
+        return hull_indices.tolist()  # number of points < than target
+
+    # DP to retrieve vertices
+    dp = [[[0.0]*(k+1) for _ in range(L)] for __ in range(L)]
+    parent = [[[-1]*(k+1) for _ in range(L)] for __ in range(L)]
+
+    # Initialisation triangles (r=3)
+    for i in range(L):
+        for j in range(i+2, L):
+            dp[i][j][3] = triangle_area_2d(hull_points[i], hull_points[i+1], hull_points[j])
+            parent[i][j][3] = i+1
+
+    # Fill DP for r=4..k
+    for r in range(4, k+1):
+        for i in range(L):
+            for j in range(i+r-1, L):
+                best = 0.0
+                best_t = -1
+                for t in range(i+1, j):
+                    val = dp[i][t][r-1] + triangle_area_2d(hull_points[i], hull_points[t], hull_points[j])
+                    if val > best:
+                        best = val
+                        best_t = t
+                dp[i][j][r] = best
+                parent[i][j][r] = best_t
+
+    # find the best dp[i][j][k]
+    best_val = 0.0
+    best_pair = (0, k-1)
+    for i in range(L):
+        for j in range(i+k-1, L):
+            if dp[i][j][k] > best_val:
+                best_val = dp[i][j][k]
+                best_pair = (i, j)
+
+    # rebuild path
+    def recover(i, j, r):
+        if r == 2:
+            return [i, j]
+        t = parent[i][j][r]
+        return recover(i, t, r-1) + [j]
+
+    indices_in_hull = recover(best_pair[0], best_pair[1], k)
+    return hull_indices[indices_in_hull].tolist()
+
 def reduce_surfaces(surface_list, n_points=None):
     ''' Remove duplicates, sort in counter-clock wise and reduce the numbre of points.
 
@@ -93,9 +152,15 @@ def reduce_surfaces(surface_list, n_points=None):
         out_surface_list = surface_list
     else:
         for vertices in surface_list:
-            simplifier = vw.Simplifier(vertices)
-
-            out_surface_list.append(simplifier.simplify(number=n_points))
+            vertices = np.array(vertices)
+            hull = ConvexHull(vertices[:, :2])
+            hull_pts = vertices[hull.vertices]
+            if(len(vertices) > n_points):
+                idx = max_area_k_gon_2d(vertices, n_points)
+                vertices = vertices[idx]
+                hull = ConvexHull(vertices[:, :2])
+                hull_pts = vertices[hull.vertices]
+            out_surface_list.append(hull_pts)
 
     return out_surface_list
 
