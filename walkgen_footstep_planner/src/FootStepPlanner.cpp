@@ -157,9 +157,10 @@ MatrixN FootStepPlanner::compute_footstep(std::vector<std::shared_ptr<ContactSch
   if (params_.use_arm) {
     pinocchio::FrameIndex frame_id = model_.getFrameId(params_.raibert_root_frame);
     offset_pose = pinocchio::updateFramePlacement(model_, data_, frame_id);
-    q_offset.head<3>() = offset_pose.translation();
-    Eigen::Quaterniond quat(offset_pose.rotation());
-    q_offset.tail<4>() << quat.x(), quat.y(), quat.z(), quat.w(); // ros convention...
+    //q_offset.head<3>() = offset_pose.translation();
+    //Eigen::Quaterniond quat(offset_pose.rotation());
+    //q_offset.tail<4>() << quat.x(), quat.y(), quat.z(), quat.w(); // ros convention...
+    //filter_q_int = FilterIntegrator(static_cast<double>(params_.dt), q_offset.head<6>());
   }
 
   // Filter quantities
