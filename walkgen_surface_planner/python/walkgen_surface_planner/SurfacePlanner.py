@@ -560,12 +560,12 @@ class SurfacePlanner():
         pitch = pin.rpy.matrixToRpy(pin.Quaternion(q[3:7]).toRotationMatrix())[1]
 
         # Should work for going up & down
-        feet_selected = [2, 3]
-        if pitch > 0.05:
-            feet_selected = [0, 1]  # Going down forward
-            costs["effector_positions_3D_select"] = [0.25, [feet_selected, shoulder_position]]
-        else:
-            costs["effector_positions_3D_select"] = [0.2, [feet_selected, shoulder_position]]
+        # feet_selected = [2, 3]
+        # if pitch > 0.05:
+        #     feet_selected = [0, 1]  # Going down forward
+        #     costs["effector_positions_3D_select"] = [0.25, [feet_selected, shoulder_position]]
+        # else:
+        #     costs["effector_positions_3D_select"] = [0.2, [feet_selected, shoulder_position]]
         #############################################################
 
         #############################################################

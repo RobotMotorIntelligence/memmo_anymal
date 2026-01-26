@@ -50,12 +50,12 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::walk(StdVec_Map_strin
   std::shared_ptr<FootTrajectoryWrapper> rhSwingTraj =
       std::make_shared<FootTrajectoryWrapper>(dt_, N_ss, stepHeight, contacts[0][rh_], contacts[1][rh_]);
 
-  std::vector<std::shared_ptr<ContactPhase>> lh_schedule = {std::make_shared<ContactPhase>(N_0),
+  std::vector<std::shared_ptr<ContactPhase>> lh_schedule = {std::make_shared<ContactPhase>(N_0 + N_ss - N_uss),
                                                             std::make_shared<ContactPhase>(N_ss, lhSwingTraj),
-                                                            std::make_shared<ContactPhase>(N - (N_0 + N_ss))};
+                                                            std::make_shared<ContactPhase>(N - (N_0 + 2 * N_ss - N_uss))};
   std::vector<std::shared_ptr<ContactPhase>> lf_schedule = {
-      std::make_shared<ContactPhase>(N_0 + N_ss - N_uss), std::make_shared<ContactPhase>(N_ss, lfSwingTraj),
-      std::make_shared<ContactPhase>(N - (N_0 + 2 * N_ss - N_uss))};
+      std::make_shared<ContactPhase>(N_0), std::make_shared<ContactPhase>(N_ss, lfSwingTraj),
+      std::make_shared<ContactPhase>(N - (N_0 + N_ss))};
   std::vector<std::shared_ptr<ContactPhase>> rh_schedule = {
       std::make_shared<ContactPhase>(N_0 + N_ds + 2 * N_ss - N_uss - N_uds),
       std::make_shared<ContactPhase>(N_ss, rhSwingTraj),
@@ -65,8 +65,8 @@ std::shared_ptr<ContactSchedule> QuadrupedalGaitGenerator::walk(StdVec_Map_strin
       std::make_shared<ContactPhase>(N_ss, rfSwingTraj),
       std::make_shared<ContactPhase>(N - (N_0 + N_ds + 4 * N_ss - 2 * N_uss - N_uds))};
 
-  gait->addSchedule(lh_, lh_schedule);
   gait->addSchedule(lf_, lf_schedule);
+  gait->addSchedule(lh_, lh_schedule);
   gait->addSchedule(rh_, rh_schedule);
   gait->addSchedule(rf_, rf_schedule);
 

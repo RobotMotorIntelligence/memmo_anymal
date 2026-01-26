@@ -245,7 +245,8 @@ def process_surfaces(surfacesIn,
 
         for i, s_ in enumerate(surfaces):
             if i != id_:
-                if surfaces[id_].Polygon_inner.intersects(s_.Polygon_outer):
+                #if surfaces[id_].Polygon_inner.intersects(s_.Polygon_outer): trying to qvoid obstqcles erasing each other when using large outer margin
+                if surfaces[id_].Polygon_inner.intersects(s_.Polygon_inner):
                     surfaces_intersect.append(s_)
                     contours_intersect.append(s_.contour_outer)
 
@@ -295,7 +296,10 @@ def process_surfaces(surfacesIn,
 
     # Add last surface remaining
     # if len(new_surfaces) > 0:
-    new_surfaces.append(surfaces[0].get_vertices_inner())
+    if (len(surfaces) == 0):
+        print ("WARNING:no surfaces detected while processing ???")
+    else:
+        new_surfaces.append(surfaces[0].get_vertices_inner())
     return new_surfaces
 
 
@@ -497,7 +501,7 @@ def order(points):
     return [points[int(elt)].tolist() for elt in output]
 
 import visvalingamwyatt as vw
-def remove_duplicates(points, threshold=0.02):
+def remove_duplicates(points, threshold=0.01):
 
     """ Decimate the number of point using visvalingamwyatt algorithm.
     """

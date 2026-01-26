@@ -186,5 +186,5 @@ def cross(a, b):
 def get_equations(points):
     """ Hyperplan normal with offsets : Ax <= -b
     """
-    output = qconvex("n", points[:, :])
+    output = qconvex("n QJ", points[:, :])
     return [[float(item) for item in elt.split()] for elt in output[2:]]
