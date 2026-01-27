@@ -51,11 +51,11 @@ from sl1m.solver import Solvers
 # --------------------------------- PROBLEM DEFINITION ----------------------------------------------------
 paths = [
     os.environ["INSTALL_HPP_DIR"] + "/anymal-rbprm/com_inequalities/feet_quasi_flat/anymal_",
-    os.environ["INSTALL_HPP_DIR"] + "/anymal-rbprm/relative_effector_positions/anymal_"
+    os.environ["INSTALL_HPP_DIR"] + "/b1Reachability/reachability_constraints/"
 ]
 suffix_com = "_effector_frame_quasi_static_reduced.obj"
-limbs = ['LFleg', 'RFleg', 'LHleg', 'RHleg']
-others = ['LF_ADAPTER_TO_FOOT', 'RF_ADAPTER_TO_FOOT', 'LH_ADAPTER_TO_FOOT', 'RH_ADAPTER_TO_FOOT']
+limbs = ['FL_foot', 'FR_foot', 'RL_foot', 'RR_foot']
+others = ['FL_foot', 'FR_foot', 'RL_foot', 'RR_foot']
 suffix_feet = "_reduced.obj"
 rom_names = ['LFleg_vN_Rom.stl', 'RFleg_vN_Rom.stl', 'LHleg_vN_Rom.stl', 'RHleg_vN_Rom.stl']
 
@@ -560,12 +560,12 @@ class SurfacePlanner():
         pitch = pin.rpy.matrixToRpy(pin.Quaternion(q[3:7]).toRotationMatrix())[1]
 
         # Should work for going up & down
-        feet_selected = [2, 3]
-        if pitch > 0.05:
-            feet_selected = [0, 1]  # Going down forward
-            costs["effector_positions_3D_select"] = [0.25, [feet_selected, shoulder_position]]
-        else:
-            costs["effector_positions_3D_select"] = [0.2, [feet_selected, shoulder_position]]
+        # feet_selected = [2, 3]
+        # if pitch > 0.05:
+        #     feet_selected = [0, 1]  # Going down forward
+        #     costs["effector_positions_3D_select"] = [0.25, [feet_selected, shoulder_position]]
+        # else:
+        #     costs["effector_positions_3D_select"] = [0.2, [feet_selected, shoulder_position]]
         #############################################################
 
         #############################################################
